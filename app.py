@@ -221,15 +221,22 @@ st.markdown('<p class="hero-sub">Generate · Animate · Narrate</p>', unsafe_all
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
 
-# ─── Sidebar – API Keys ───────────────────────────────────────
-with st.sidebar:
-    st.markdown("### ⚙️ API Configuration")
-    hf_token = st.text_input("Hugging Face Token", type="password",
-                              help="من huggingface.co/settings/tokens")
-    st.markdown("---")
-    st.markdown("**روابط مفيدة:**")
-    st.markdown("• [Hugging Face Tokens](https://huggingface.co/settings/tokens)")
-    st.markdown("• [Free Image Models](https://huggingface.co/models?pipeline_tag=text-to-image)")
+# ─── Token Input (inline) ────────────────────────────────────
+st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+col_tok1, col_tok2 = st.columns([3, 1])
+with col_tok1:
+    st.markdown('<p class="section-label">🔑 Hugging Face Token</p>', unsafe_allow_html=True)
+    hf_token = st.text_input(
+        "HF Token",
+        type="password",
+        placeholder="hf_xxxxxxxxxxxxxxxxxxxxxxxx",
+        label_visibility="collapsed",
+        help="من huggingface.co/settings/tokens"
+    )
+with col_tok2:
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown('[احصل على Token مجاني ↗](https://huggingface.co/settings/tokens)')
+st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ─── Helper Functions ─────────────────────────────────────────
@@ -332,7 +339,7 @@ with tab1:
 
         if generate_btn:
             if not hf_token:
-                st.error("⚠️ أدخل Hugging Face Token في الإعدادات (القائمة الجانبية)")
+                st.error("⚠️ أدخل Hugging Face Token في الخانة أعلى الصفحة")
             elif not img_prompt.strip():
                 st.warning("⚠️ اكتب وصفاً للصورة أولاً")
             else:
