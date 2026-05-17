@@ -244,22 +244,21 @@ st.markdown('</div>', unsafe_allow_html=True)
 def generate_image_hf(prompt: str, token: str, model: str) -> bytes | None:
     """Generate image via Hugging Face Inference API (free tier)."""
     API_URL = f"https://router.huggingface.co/hf-inference/models/{model}"
-    headers = {"Authorization": f"Bearer {token}"}
-    payload = {"inputs": prompt,
-                "parameters": {"num_inference_steps": 30, "guidance_scale": 7.5}}
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    # FLUX models use simple inputs only
+    payload = {"inputs": prompt}
     try:
-        with st.spinner("🎨 يتم توليد الصورة..."):
-            resp = requests.post(API_URL, headers=headers, json=payload, timeout=120)
+        with st.spinner("🎨 يتم توليد الصورة... قد تأخذ 30-60 ثانية"):
+            resp = requests.post(API_URL, headers=headers, json=payload, timeout=180)
         if resp.status_code == 200:
             return resp.content
         elif resp.status_code == 503:
-            # Model loading – wait and retry once
-            st.info("⏳ النموذج يشتغل، سيُعاد المحاولة خلال 30 ثانية...")
+            st.info("⏳ النموذج يشتغل، انتظر 30 ثانية...")
             time.sleep(30)
-            resp2 = requests.post(API_URL, headers=headers, json=payload, timeout=120)
+            resp2 = requests.post(API_URL, headers=headers, json=payload, timeout=180)
             return resp2.content if resp2.status_code == 200 else None
         else:
-            st.error(f"❌ خطأ في توليد الصورة: {resp.status_code} – {resp.text[:200]}")
+            st.error(f"❌ خطأ في توليد الصورة: {resp.status_code} – {resp.text[:300]}")
             return None
     except Exception as e:
         st.error(f"❌ خطأ في الاتصال: {e}")
@@ -307,10 +306,10 @@ with tab1:
         model_choice = st.selectbox(
             "اختر النموذج",
             options=[
+                "black-forest-labs/FLUX.1-schnell",
+                "stabilityai/stable-diffusion-3-medium-diffusers",
                 "black-forest-labs/FLUX.1-dev",
-                "stabilityai/stable-diffusion-3.5-large",
                 "stabilityai/stable-diffusion-xl-base-1.0",
-                "runwayml/stable-diffusion-v1-5",
             ],
             index=0
         )
