@@ -1,3 +1,6 @@
+
+Copy
+
 import streamlit as st
 import requests
 import base64
@@ -6,39 +9,39 @@ import io
 import time
 from PIL import Image
 import json
-
+ 
 # ─── Page Config ─────────────────────────────────────────────
 st.set_page_config(
     page_title="AI Dream Studio",
     page_icon="✨",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
-
+ 
 # ─── Custom CSS ───────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Raleway:wght@300;400;600&display=swap');
-
+ 
 :root {
     --gold: #c9a96e;
     --dark: #0a0a0f;
     --glass: rgba(255,255,255,0.04);
     --border: rgba(201,169,110,0.25);
 }
-
+ 
 * { box-sizing: border-box; }
-
+ 
 .stApp {
     background: radial-gradient(ellipse at 20% 50%, #1a0a2e 0%, #0a0a0f 50%, #0d1a0a 100%);
     font-family: 'Raleway', sans-serif;
     color: #e8e0d0;
 }
-
+ 
 /* Hide Streamlit chrome */
 #MainMenu, footer, header { visibility: hidden; }
 .block-container { padding: 2rem 3rem; max-width: 1200px; }
-
+ 
 /* ── Hero Title ── */
 .hero-title {
     font-family: 'Cinzel', serif;
@@ -58,7 +61,7 @@ st.markdown("""
     50%  { background-position: 100% center; }
     100% { background-position: 0% center; }
 }
-
+ 
 .hero-sub {
     text-align: center;
     color: rgba(201,169,110,0.7);
@@ -68,14 +71,14 @@ st.markdown("""
     margin-top: 0.4rem;
     font-weight: 300;
 }
-
+ 
 .divider {
     width: 60%;
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--gold), transparent);
     margin: 2rem auto;
 }
-
+ 
 /* ── Glass Cards ── */
 .glass-card {
     background: var(--glass);
@@ -85,7 +88,7 @@ st.markdown("""
     backdrop-filter: blur(12px);
     margin-bottom: 1.5rem;
 }
-
+ 
 .section-label {
     font-family: 'Cinzel', serif;
     font-size: 0.75rem;
@@ -94,7 +97,7 @@ st.markdown("""
     color: var(--gold);
     margin-bottom: 0.8rem;
 }
-
+ 
 /* ── Inputs ── */
 textarea, .stTextArea textarea {
     background: rgba(0,0,0,0.4) !important;
@@ -106,7 +109,7 @@ textarea, .stTextArea textarea {
     resize: vertical !important;
 }
 textarea:focus { border-color: var(--gold) !important; box-shadow: 0 0 0 2px rgba(201,169,110,0.15) !important; }
-
+ 
 /* ── Buttons ── */
 .stButton > button {
     width: 100%;
@@ -128,7 +131,7 @@ textarea:focus { border-color: var(--gold) !important; box-shadow: 0 0 0 2px rgb
     transform: translateY(-2px) !important;
     box-shadow: 0 8px 30px rgba(201,169,110,0.4) !important;
 }
-
+ 
 /* ── Image Frame ── */
 .image-frame {
     position: relative;
@@ -137,13 +140,13 @@ textarea:focus { border-color: var(--gold) !important; box-shadow: 0 0 0 2px rgb
     border: 1px solid var(--border);
     box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(201,169,110,0.08);
 }
-
+ 
 /* ── Animated Image Effects ── */
 .img-float { animation: floatY 6s ease-in-out infinite; }
 .img-pulse { animation: pulseGlow 3s ease-in-out infinite; }
 .img-zoom  { animation: slowZoom 12s ease-in-out infinite alternate; }
 .img-pan   { animation: panX 10s ease-in-out infinite alternate; }
-
+ 
 @keyframes floatY {
     0%, 100% { transform: translateY(0px); }
     50%       { transform: translateY(-18px); }
@@ -160,7 +163,7 @@ textarea:focus { border-color: var(--gold) !important; box-shadow: 0 0 0 2px rgb
     from { object-position: 0% center; }
     to   { object-position: 100% center; }
 }
-
+ 
 /* ── Status Badge ── */
 .status-badge {
     display: inline-block;
@@ -172,7 +175,7 @@ textarea:focus { border-color: var(--gold) !important; box-shadow: 0 0 0 2px rgb
 }
 .status-success { background: rgba(80,200,120,0.15); border: 1px solid rgba(80,200,120,0.4); color: #50c878; }
 .status-error   { background: rgba(220,80,80,0.15); border: 1px solid rgba(220,80,80,0.4); color: #dc5050; }
-
+ 
 /* ── API key input ── */
 .stTextInput input {
     background: rgba(0,0,0,0.4) !important;
@@ -181,7 +184,7 @@ textarea:focus { border-color: var(--gold) !important; box-shadow: 0 0 0 2px rgb
     color: #e8e0d0 !important;
     font-family: 'Raleway', sans-serif !important;
 }
-
+ 
 /* ── Selectbox ── */
 .stSelectbox > div > div {
     background: rgba(0,0,0,0.4) !important;
@@ -189,10 +192,10 @@ textarea:focus { border-color: var(--gold) !important; box-shadow: 0 0 0 2px rgb
     border-radius: 10px !important;
     color: #e8e0d0 !important;
 }
-
+ 
 /* ── Audio player ── */
 audio { width: 100%; border-radius: 10px; margin-top: 1rem; }
-
+ 
 /* ── Tabs ── */
 .stTabs [data-baseweb="tab-list"] {
     background: rgba(0,0,0,0.3);
@@ -213,14 +216,14 @@ audio { width: 100%; border-radius: 10px; margin-top: 1rem; }
 }
 </style>
 """, unsafe_allow_html=True)
-
-
+ 
+ 
 # ─── Hero Header ─────────────────────────────────────────────
 st.markdown('<h1 class="hero-title">✦ AI DREAM STUDIO ✦</h1>', unsafe_allow_html=True)
 st.markdown('<p class="hero-sub">Generate · Animate · Narrate</p>', unsafe_allow_html=True)
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-
-
+ 
+ 
 # ─── Sidebar – API Keys ───────────────────────────────────────
 with st.sidebar:
     st.markdown("### ⚙️ API Configuration")
@@ -230,10 +233,10 @@ with st.sidebar:
     st.markdown("**روابط مفيدة:**")
     st.markdown("• [Hugging Face Tokens](https://huggingface.co/settings/tokens)")
     st.markdown("• [Free Image Models](https://huggingface.co/models?pipeline_tag=text-to-image)")
-
-
+ 
+ 
 # ─── Helper Functions ─────────────────────────────────────────
-
+ 
 def generate_image_hf(prompt: str, token: str, model: str) -> bytes | None:
     """Generate image via Hugging Face Inference API (free tier)."""
     API_URL = f"https://api-inference.huggingface.co/models/{model}"
@@ -257,8 +260,8 @@ def generate_image_hf(prompt: str, token: str, model: str) -> bytes | None:
     except Exception as e:
         st.error(f"❌ خطأ في الاتصال: {e}")
         return None
-
-
+ 
+ 
 def text_to_speech_free(text: str, lang: str = "ar") -> bytes | None:
     """TTS via free MyMemory API (no key needed)."""
     try:
@@ -269,33 +272,34 @@ def text_to_speech_free(text: str, lang: str = "ar") -> bytes | None:
         return None
     except Exception:
         return None
-
-
+ 
+ 
 def img_to_base64(img_bytes: bytes) -> str:
     return base64.b64encode(img_bytes).decode()
-
-
+ 
+ 
 # ─── Main Tabs ────────────────────────────────────────────────
 tab1, tab2, tab3 = st.tabs(["🎨  توليد الصورة", "🎬  التحريك", "🔊  النطق"])
-
-
+ 
+ 
 # ════════════════════════════════════════════════════════════════
 # TAB 1 – IMAGE GENERATION
 # ════════════════════════════════════════════════════════════════
 with tab1:
     col1, col2 = st.columns([1.2, 1], gap="large")
-
+ 
     with col1:
         st.markdown('<div class="glass-card">', unsafe_allow_html=True)
         st.markdown('<p class="section-label">📝 وصف الصورة (Prompt)</p>', unsafe_allow_html=True)
-
+ 
         img_prompt = st.text_area(
-            label="",
+            label="وصف الصورة",
+            label_visibility="collapsed",
             placeholder="صف الصورة التي تريدها... مثال:\nA magical forest at night, glowing mushrooms, ethereal light rays, fantasy art, 8K",
             height=130,
             key="img_prompt"
         )
-
+ 
         model_choice = st.selectbox(
             "اختر النموذج",
             options=[
@@ -307,15 +311,15 @@ with tab1:
             ],
             index=0
         )
-
+ 
         negative_prompt = st.text_input(
             "Negative Prompt (اختياري)",
             placeholder="ugly, blurry, low quality, distorted..."
         )
-
+ 
         generate_btn = st.button("✦ توليد الصورة", key="gen_img")
         st.markdown('</div>', unsafe_allow_html=True)
-
+ 
         # Tips
         st.markdown('<div class="glass-card">', unsafe_allow_html=True)
         st.markdown('<p class="section-label">💡 نصائح للـ Prompt</p>', unsafe_allow_html=True)
@@ -326,10 +330,10 @@ with tab1:
 - الكاميرا: *close-up, wide shot, bird's eye view*
         """)
         st.markdown('</div>', unsafe_allow_html=True)
-
+ 
     with col2:
         st.markdown('<div class="section-label">🖼 الصورة المولّدة</div>', unsafe_allow_html=True)
-
+ 
         if generate_btn:
             if not hf_token:
                 st.error("⚠️ أدخل Hugging Face Token في الإعدادات (القائمة الجانبية)")
@@ -342,7 +346,7 @@ with tab1:
                     st.session_state["img_prompt_used"] = img_prompt
                     st.markdown('<span class="status-badge status-success">✓ تم التوليد بنجاح</span>',
                                 unsafe_allow_html=True)
-
+ 
         if "generated_img" in st.session_state:
             img_b64 = img_to_base64(st.session_state["generated_img"])
             st.markdown(f'''
@@ -350,7 +354,7 @@ with tab1:
                 <img src="data:image/png;base64,{img_b64}"
                      style="width:100%;display:block;border-radius:14px;" />
             </div>''', unsafe_allow_html=True)
-
+ 
             # Download button
             st.download_button(
                 label="⬇ تحميل الصورة",
@@ -368,8 +372,8 @@ with tab1:
                 </div>
             </div>
             """, unsafe_allow_html=True)
-
-
+ 
+ 
 # ════════════════════════════════════════════════════════════════
 # TAB 2 – ANIMATION
 # ════════════════════════════════════════════════════════════════
@@ -379,7 +383,7 @@ with tab2:
     else:
         st.markdown('<div class="glass-card">', unsafe_allow_html=True)
         st.markdown('<p class="section-label">🎬 اختر نوع التحريك</p>', unsafe_allow_html=True)
-
+ 
         anim_type = st.selectbox(
             "",
             options=[
@@ -392,14 +396,14 @@ with tab2:
             index=0
         )
         anim_key = anim_type[0]
-
+ 
         speed = st.slider("سرعة التحريك (ثواني)", 2, 15, 6)
-
+ 
         st.markdown('</div>', unsafe_allow_html=True)
-
+ 
         # Show animated image
         img_b64 = img_to_base64(st.session_state["generated_img"])
-
+ 
         anim_css_map = {
             "float": f"animation: floatY {speed}s ease-in-out infinite;",
             "pulse": f"animation: pulseGlow {speed}s ease-in-out infinite;",
@@ -407,7 +411,7 @@ with tab2:
             "pan":   f"animation: panX {speed}s ease-in-out infinite alternate;",
         }
         anim_style = anim_css_map[anim_key]
-
+ 
         st.markdown(f"""
         <style>
         @keyframes floatY  {{ 0%,100%{{transform:translateY(0)}} 50%{{transform:translateY(-20px)}} }}
@@ -426,21 +430,21 @@ with tab2:
             ✦ LIVE ANIMATION PREVIEW ✦
         </p>
         """, unsafe_allow_html=True)
-
-
+ 
+ 
 # ════════════════════════════════════════════════════════════════
 # TAB 3 – TEXT TO SPEECH
 # ════════════════════════════════════════════════════════════════
 with tab3:
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.markdown('<p class="section-label">🎙 النص المراد نطقه</p>', unsafe_allow_html=True)
-
+ 
     tts_text = st.text_area(
         "",
         placeholder="اكتب السيناريو أو أي نص تريد سماعه...\nمثال: مرحباً بكم في استوديو الأحلام الذكي، حيث تتحول كلماتك إلى صور حية ومتحركة.",
         height=180
     )
-
+ 
     lang_map = {
         "العربية":   "ar-SA",
         "الإنجليزية": "en-US",
@@ -449,13 +453,13 @@ with tab3:
     }
     lang_choice = st.selectbox("اللغة", list(lang_map.keys()))
     lang_code = lang_map[lang_choice]
-
+ 
     voice_speed = st.slider("سرعة النطق", 0.5, 2.0, 1.0, 0.1)
     voice_pitch = st.slider("حدة الصوت", 0.5, 2.0, 1.0, 0.1)
-
+ 
     speak_btn = st.button("🔊 تشغيل النطق", key="speak_btn")
     st.markdown('</div>', unsafe_allow_html=True)
-
+ 
     # Web Speech API (runs in browser, no API key needed)
     if speak_btn and tts_text.strip():
         escaped = tts_text.replace("'", "\\'").replace("\n", " ")
@@ -478,17 +482,17 @@ with tab3:
             <span class="status-badge status-success">🔊 يتم النطق الآن...</span>
         </div>
         """, unsafe_allow_html=True)
-
+ 
     elif speak_btn:
         st.warning("⚠️ اكتب نصاً أولاً")
-
+ 
     # Combined showcase: animated image + speech
     if "generated_img" in st.session_state and tts_text.strip():
         st.markdown("---")
         st.markdown('<p class="section-label">✨ العرض الكامل – صورة متحركة + نطق</p>', unsafe_allow_html=True)
         img_b64 = img_to_base64(st.session_state["generated_img"])
         escaped2 = tts_text.replace("'", "\\'").replace("\n", " ")
-
+ 
         st.markdown(f"""
         <style>
         @keyframes floatFull {{ 0%,100%{{transform:translateY(0)}} 50%{{transform:translateY(-15px)}} }}
@@ -515,8 +519,8 @@ with tab3:
             </button>
         </div>
         """, unsafe_allow_html=True)
-
-
+ 
+ 
 # ─── Footer ──────────────────────────────────────────────────
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 st.markdown("""
